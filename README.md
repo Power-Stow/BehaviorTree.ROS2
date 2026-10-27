@@ -1,4 +1,5 @@
 # BehaviorTree.ROS2
+
 [![Test](https://github.com/BehaviorTree/BehaviorTree.ROS2/actions/workflows/test.yml/badge.svg)](https://github.com/BehaviorTree/BehaviorTree.ROS2/actions/workflows/test.yml)
 
 This repository contains useful wrappers to use ROS2 and BehaviorTree.CPP together.
@@ -19,6 +20,7 @@ Our main goals are:
 # Documentation
 
 - [ROS Behavior Wrappers](behaviortree_ros2/ros_behavior_wrappers.md)
+- [Library and action regression tests](behaviortree_ros2/README.md)
 - [TreeExecutionServer](behaviortree_ros2/tree_execution_server.md)
 - [Sample Behaviors](btcpp_ros2_samples/README.md)
 
@@ -29,7 +31,6 @@ Note that this library is compatible **only** with:
 
 Additionally, check **plugins.hpp** to see how to learn how to
 wrap your Nodes into plugins that can be loaded at run-time.
-
 
 ## Acknowledgements
 

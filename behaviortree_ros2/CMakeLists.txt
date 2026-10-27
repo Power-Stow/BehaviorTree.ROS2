@@ -62,4 +62,10 @@ install(
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME})
 
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(test_ros_action_node test/test_ros_action_node.cpp)
+  target_link_libraries(test_ros_action_node ${PROJECT_NAME})
+endif()
+
 ament_package()
