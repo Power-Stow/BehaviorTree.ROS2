@@ -31,6 +31,29 @@ It must return either SUCCESS or FAILURE.
 Optional callback executed when the node is halted.
 Note that cancelGoal() is done automatically.
 
+### Action lifecycle and cancellation
+
+Each invocation retains its own acceptance and result futures, goal handle, and originating client.
+Late callbacks cannot access a detached or destroyed leaf or change a later invocation.
+Serialize tick, halt, destruction, and dispatch through shared clients, and keep the ROS node and default context alive through halt.
+During callback dispatch, lifecycle changes for the same action type throw `BT::LogicError`, including calls to peers on other endpoints.
+Request completion from `onFeedback()` by returning `SUCCESS` or `FAILURE`.
+Feedback completion requests are not latched; later feedback can replace the status before the owning leaf ticks.
+
+`cancelGoal()` attempts bounded cleanup and leaves a completed result for the next tick.
+`halt()` retries retained cleanup regardless of BT status, calls `onHalt()` once for a running invocation, and resets the status.
+Transport errors are logged during cleanup, while result retrieval errors remain available for tick to report.
+The result-aware `onFailure(ActionNodeErrorCode, const std::optional<WrappedResult>&)` overload receives a result when available and otherwise delegates to the single-argument hook.
+
+`hasUnresolvedGoal()` reports whether this leaf retains an invocation, including after acceptance timeout or unconfirmed halt.
+A later halt retries cleanup; each acceptance, cancellation, and result wait has its own `RosNodeParams::server_timeout` budget.
+A new invocation attempts cleanup once and may abandon an unresolved request before sending another goal.
+The query does not track abandoned requests, and bounded cancellation does not establish that an action has stopped.
+There is no background cleanup timer or overall execution deadline; acceptance timeouts use the ROS node clock.
+
+`setActionName()` changes the endpoint for future invocations; retained cleanup uses its original client.
+The `action_name` input takes precedence when nonempty; an empty input uses `RosNodeParams::default_port_value`.
+
 # ROS Service Behavior Wrapper
 
 ### setRequest(typename Request::SharedPtr& request)
